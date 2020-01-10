@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>后台管理系统</title>
+		<link href="/images/index.css" type="text/css" rel="stylesheet"/>
+		<script src="/images/jquery.js"></script>
+		<link rel="stylesheet" href="/images/css.css">
+		<link rel="stylesheet" href="/images/boot.css">	
+		<link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+		<style type="text/css">
+			.layui-table th{text-align: center;font-weight: bold;}
+			.layui-table td{text-align: center;}
+			a:visited{color: #fff;}
+			.sel{height: 35px;width: 180px;border: 1px solid #ddd; padding-left: 10px;border-radius: 5px;appearance:none;}
+			.sel option{height: 30px; line-height: 30px;}
+		</style>
+	</head>
+	<body>
+		<div class="note">
+			<h4><a href="#" style="background:#75bdb6;padding:5px;border:none;color:#fff" id="dialog">添加桌号</a></h4>
+			<div style="height: 60px; line-height: 60px; padding: 0 26px;">
+				<select name="re" onchange="gradeChange(this.value)" class="sel">
+					<option value="0">全部</option>
+					{volist name='restaurant' id='re'}
+					<option value="{$re.id}" <?php if($restaurant_id==$re['id']){echo 'selected';} ?>>{$re.name}</option>
+					{/volist}
+				</select>
+			</div>
+			<table class="news_list layui-table" style="width: 96%; margin: 12px auto;">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>排序</th>
+						<th>标题</th>
+						<th>所属餐厅</th>
+						<th>小程序码</th>
+						<th>状态</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody id="tb">
+				{volist name='row' id='r'}
+					<tr>
+						<td>{$r.id}</td>
+						<td>{$r.sort}</td>
+						<td>{$r.name}</td>
+						<td>{$r.re_name}</td>
+						<td>{$r.x_code}</td>
+						<td><?php if($r['state']==0){echo "<span style='color:#00FF6F'>营业中</span>";}else{echo "<span style='color:red'>停止营业</span>";} ?></td>
+						<td style="width: 400px;">
+							<a href="#" class="layui-btn layui-btn-sm layui-btn-normal img_edit">修改</a>
+							<a href="#" class="layui-btn layui-btn-sm layui-btn-warm img_edit">查看桌号订单</a>
+							<a href="{:url('Order/table_number_state','id='.$r.id.'&restaurant_id='.$restaurant_id)}" ><?php if($r['state']=='0'){echo "<span class='layui-btn layui-btn-sm'>停止营业</span>";}else{echo "<span class='layui-btn layui-btn-sm layui-btn-primary'>营业</span>";} ?></a>
+							<a href="{:url('Order/table_number_del','id='.$r.id.'&restaurant_id='.$restaurant_id)}" class="layui-btn layui-btn-sm layui-btn-danger">删除</a>
+						</td>
+					</tr>
+				{/volist}
+				</tbody>
+			</table>
+			<div style="text-align:center">
+				{$row->render()}
+			</div>
+		</div>
+		<!--添加-->
+		<div class="model">
+			<div class="head">
+				<span>添加菜品分类</span>
+				<a href="javascript:" class="close">×</a>
+			</div>
+			<div class="content">
+				<form action="{:url('Order/table_number_add')}" method="post" enctype="multipart/form-data">
+					<div class="wrap">
+						<label>分类名称</label>
+						<input type="text" name="name" value=""/>
+					</div>
+					<div class="wrap">
+						<label>排序</label>
+						<input type="text" name="sort" value=""/>
+					</div>
+					<div class="wrap">
+						<label>所属餐厅</label>
+						<select name="restaurant_id" id="">
+							<option value="0">---请选择所属餐厅---</option>
+							{volist name='restaurant' id='re'}
+							<option value="{$re.id}">{$re.name}</option>
+							{/volist}
+						</select>
+					</div>
+					<div class="wrap">
+						<label>状态</label>
+						<input type="radio" name="state" value="0" checked>营业中
+						<input type="radio" name="state" value="1">停止营业
+					</div>
+					<div class="wrap btn">
+						<input type="submit" class="save" value="确定"/>
+						<input type="reset" class="reset" value="重置"/>
+					</div>
+				</form>
+			</div>
+		</div>
+		<!--修改-->
+		<div class="model_edit">
+			<div class="head">
+				<span>修改菜品分类</span>
+				<a href="javascript:" class="close_edit">×</a>
+			</div>
+			<div class="content">
+				<form action="{:url('Order/table_number_update')}" method="post" enctype="multipart/form-data">
+					<input type="hidden" name="re_id" value="{$restaurant_id}">
+					<input type="hidden" id="id" name="id">
+					<div class="wrap">
+						<label>分类名称</label>
+						<input type="text" id="name" name="name" value=""/>
+					</div>
+					<div class="wrap">
+						<label>排序</label>
+						<input type="text" id="sort" name="sort" value=""/>
+					</div>
+					<div class="wrap">
+						<label>所属餐厅</label>
+						<select name="restaurant_id" id="restaurant_id">
+							<option value="0">---请选择所属餐厅---</option>
+							{volist name='restaurant' id='re'}
+							<option value="{$re.id}">{$re.name}</option>
+							{/volist}
+						</select>
+					</div>
+					
+					<div class="wrap btn">
+						<input type="submit" class="save" value="确定"/>
+						<input type="reset" class="reset" value="重置"/>
+					</div>
+				</form>
+			</div>
+		</div>
+		<script src="/static/jquery-1.9.1.min.js"></script>
+		<script type="text/javascript">
+			//添加
+			$('#dialog').on('click', function(){
+				$('.model').show();
+			})
+			$('.close').on('click', function(){
+				$('.model').hide();
+			})
+			//修改
+			$('.img_edit').on('click', function(){
+				$('.model_edit').show();
+			})
+			$('.close_edit').on('click', function(){
+				$('.model_edit').hide();
+			})
+			//回显
+			$('.img_edit').click(function(){
+				let val = $(this).parents('tr').find('td').eq(0).text();
+				$.ajax({
+					url:'/index/Order/table_number_edit',
+					type:'post',
+					data:{'id':val},
+					success:function(data){
+						$('#id').val(data.id)
+						$('#name').val(data.name)
+						$('#sort').val(data.sort)
+						$('#restaurant_id').val(data.restaurant_id)
+					}
+				})
+			})
+			//根据餐厅筛选桌号
+			function gradeChange(val){
+				location.href='/index/Order/table_number_one?restaurant_id='+val;
+			}
+		</script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	</body>
+</html>

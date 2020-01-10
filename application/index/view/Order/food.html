@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>后台管理系统</title>
+		<link href="/images/index.css" type="text/css" rel="stylesheet"/>
+		<script src="/images/jquery.js"></script>
+		<link rel="stylesheet" href="/images/css.css">
+		<link rel="stylesheet" href="/images/boot.css">	
+		<link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+		<style type="text/css">
+			.layui-table th{text-align: center;font-weight: bold;}
+			.layui-table td{text-align: center;}
+			#upload-add,#upload-edit{height: 30px;line-height: 30px;padding: 0 10px;margin-left: 10px;}
+			a:visited{
+				color: #fff;
+			}
+		</style>
+	</head>
+	<body>
+				
+		<div class="note">
+			<h4><a href="#" style="background:#75bdb6;padding:5px;border:none;color:#fff" id="dialog">添加菜品</a></h4>
+			<table class="news_list layui-table" style="width: 96%; margin: 12px auto;">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>排序</th>
+						<th>菜名</th>
+						<th>图片</th>
+						<th>单价(元)</th>
+						<th>折扣</th>
+						<th>会员折扣</th>
+						<th>库存</th>
+						<th>状态</th>
+						<th>添加时间</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody>
+				{volist name='row' id='r'}
+					<tr>
+						<td>{$r.id}</td>
+						<td>{$r.sort}</td>
+						<td>{$r.name}</td>
+						<td><img style="height:55px" src="{$r.img}" alt=""></td>
+						<td>{$r.money}</td>
+						<td>{$r.discount}</td>
+						<td>{$r.member_discount}</td>
+						<td>{$r.stock}</td>
+						<td><?php if($r['state']==0){echo "<span style='color:#00FF6F'>销售中</span>";}else{echo "<span style='color:red'>停止销售</span>";} ?></td>
+						<td>{$r.start_time|date="Y-m-d H:i:s",###}</td>
+						<td style="width: 400px;">
+							<a href="#" class="layui-btn layui-btn-sm img_edit">修改</a>
+							<a href="{:url('food_sort_up','id='.$r.id)}" class="layui-btn layui-btn-sm">菜品类别</a>
+							<a href="{:url('Order/food_state','id='.$r.id)}" ><?php if($r['state']=='0'){echo "<span class='layui-btn layui-btn-sm layui-btn-normal'>停止销售</span>";}else{echo "<span class='layui-btn layui-btn-sm layui-btn-warm'>销售中</span>";} ?></a>
+							<a href="{:url('Order/food_del','id='.$r.id)}" class="layui-btn layui-btn-sm layui-btn-danger">删除</a>
+						</td>
+					</tr>
+				{/volist}
+				</tbody>
+			</table>
+		</div>
+		<!--添加-->
+		<div class="model">
+			<div class="head">
+				<span>添加菜品</span>
+				<a href="javascript:" class="close">×</a>
+			</div>
+			<div class="content">
+				<form action="{:url('Order/food_add')}" method="post" enctype="multipart/form-data">
+					<div class="wrap">
+						<label>菜名</label>
+						<input type="text" name="name" value=""/>
+					</div>
+					<div class="wrap">
+						<label>排序</label>
+						<input type="text" name="sort" value="5"/>
+					</div>
+					<div class="wrap">
+						<label>图片</label>
+						<input type="text" name="" id="add_img" />
+						<button type="button" class="layui-btn" id="upload-add">
+							<i class="layui-icon">&#xe67c;</i>点击上传
+						</button>
+						<input type="file" name="img" value="" id="add_file" style="display: none;"/>
+					</div>
+					<div class="wrap">
+						<label>菜品说明</label>
+						<textarea name="content" id="" cols="30" rows="10"></textarea>
+					</div>
+					<div class="wrap">
+						<label>单价(元)</label>
+						<input type="text" name="money" value=""/>
+					</div>
+					<div class="wrap">
+						<label>是否参与折扣</label>
+						<input type="radio" name="discount" value="1"/>是
+						<input type="radio" name="discount" value="0" checked/>否
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<label>是否参与会员折扣</label>
+						<input type="radio" name="member_discount" value="1"/>是
+						<input type="radio" name="member_discount" value="0" checked/>否
+					</div>
+					<div class="wrap">
+						<label>库存</label>
+						<input type="text" name="stock" value=""/>
+					</div>
+					<div class="wrap">
+						<label>状态</label>
+						<input type="radio" name="state" value="0" checked>销售中
+						<input type="radio" name="state" value="1">售空
+					</div>
+					<div class="wrap btn">
+						<input type="submit" class="save" id="btn" value="确定"/>
+						<input type="reset" class="reset" value="重置"/>
+					</div>
+				</form>
+			</div>
+		</div>
+		<!--修改-->
+		<div class="model_edit">
+			<div class="head">
+				<span>修改菜品</span>
+				<a href="javascript:" class="close_edit">×</a>
+			</div>
+			<div class="content">
+				<form action="{:url('Order/food_update')}" method="post" enctype="multipart/form-data">
+					<input type="hidden" name="id" id="id">
+					<div class="wrap">
+						<label>菜名</label>
+						<input type="text" id="name" name="name" value=""/>
+					</div>
+					<div class="wrap">
+						<label>排序</label>
+						<input type="text" id="sort" name="sort" value="5"/>
+					</div>
+					<div class="wrap">
+						<label>图片</label>
+						<img src="" id="img" alt="" width="60px" height="60px">
+						<button type="button" class="layui-btn" id="upload-edit">
+							<i class="layui-icon">&#xe67c;</i>点击上传
+						</button>
+						<input type="file" name="img" value="" id="edit_file" style="display: none;"/>
+					</div>
+					<div class="wrap">
+						<label>菜品说明</label>
+						<textarea name="content" id="content" cols="30" rows="10"></textarea>
+					</div>
+					<div class="wrap">
+						<label>单价(元)</label>
+						<input type="text" id="money" name="money" value=""/>
+					</div>
+					<div class="wrap">
+						<label>是否参与折扣</label>
+						<input type="radio" id="r1" name="discount" value="1"/>是
+						<input type="radio" id="r2" name="discount" value="0"/>否
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<label>是否参与会员折扣</label>
+						<input type="radio" id="r3" name="member_discount" value="1"/>是
+						<input type="radio" id="r4" name="member_discount" value="0"/>否
+					</div>
+					<div class="wrap">
+						<label>库存</label>
+						<input type="text" id="stock" name="stock" value=""/>
+					</div>
+					<div class="wrap btn">
+						<input type="submit" class="save" id="btn" value="确定"/>
+						<input type="reset" class="reset" value="重置"/>
+					</div>
+				</form>
+			</div>
+		</div>
+		<script src="/static/jquery-1.9.1.min.js"></script>
+		<script type="text/javascript">
+			//添加
+			$('#dialog').on('click', function(){
+				$('.model').show();
+			})
+			$('.close').on('click', function(){
+				$('.model').hide();
+			})
+			//修改
+			$('.img_edit').on('click', function(){
+				$('.model_edit').show();
+			})
+			$('.close_edit').on('click', function(){
+				$('.model_edit').hide();
+			})
+			//修改菜品
+			$('.img_edit').click(function(){
+				let val = $(this).parents('tr').find('td').eq(0).text();
+				$.ajax({
+					url:'/index/Order/food_edit',
+					type:'post',
+					data:{'id':val},
+					success:function(data){
+						$('#id').val(data.id)
+						$('#name').val(data.name)
+						$('#sort').val(data.sort)
+						$('#content').val(data.content)
+						$('#money').val(data.money)
+						$('#stock').val(data.stock)
+						$('#img').attr('src',data.img);
+						if(data.discount==0){
+							$('#r2').prop('checked',true);
+						}else{
+							$('#r1').prop('checked',true);
+						}
+						if(data.member_discount==0){
+							$('#r4').prop('checked',true);
+						}else{
+							$('#r3').prop('checked',true);
+						}
+					}
+				})
+			})
+			
+			// 添加上传
+			$('#upload-add').click(function(){
+				$('#add_file').click();
+			})
+			$('#add_file').on('change',function(){
+				let name = this.files[0].name;
+				$('#add_img').val(name);
+			})
+			
+			// 编辑上传
+			$('#upload-edit').click(function(){
+				$('#edit_file').click();
+			})
+			$('#edit_file').on('change',function(){
+				let pics = this.files;
+				
+				for(var i = 0; i < pics.length; i++ ){
+					let fr = new FileReader();
+					fr.onload = function(e){
+						$('#img').attr('src',this.result);
+					}
+				  fr.readAsDataURL(pics[i]);//读取文件
+				}
+			})
+		</script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	</body>
+</html>

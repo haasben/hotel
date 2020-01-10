@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>新增权限</title>
+		<link href="/images/index.css" type="text/css" rel="stylesheet"/>
+		<link rel="stylesheet" href="/images/css.css">
+		<link rel="stylesheet" href="/images/boot.css">
+		<link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+		<style type="text/css">
+			.layui-table th{text-align: center;font-weight: bold;}
+			.layui-table td{text-align: center;}
+		</style>
+	<body>
+		<div class="note">
+			<h4>
+				<span>权限列表</span>
+				<a href="#" style="background:#75bdb6;padding:5px;border:none;color:#fff" id="dialog">添加规则</a>
+			</h4>
+			<div style="width:100%;background:#d1fffd;font:16px/50px 微软雅黑;color:#333;text-indent: 2em">提示:父级被隐藏时,子级会跟着隐藏,三级规则无法被隐藏,规则会在导航条显示</div>
+			<table class="news_list layui-table" style="width: 96%; margin: 12px auto;">
+				<thead>
+				<tr>
+					<th>排序</th>
+					<th>ID</th>
+					<th>标题</th>
+					<th>规则</th>
+					<th>层级</th>
+					<th>状态</th>
+					<th>创建时间</th>
+					<th>操作</th>
+				</tr>
+				</thead>
+				<tbody>
+				{volist name='rows' id='v'}
+				<tr>
+					<td>{$v.sort}</td>
+					<td>{$v.id}</td>
+					<td>{$v.name_txt}</td>
+					<td>{$v.pow_url}</td>
+					<td>{$v.cj}</td>
+					<td><?php if($v['state']=='正常'){echo "<span style='color:#00FF75'>显示</span>";}else{echo "<span style='color:red'>隐藏</span>";} ?></td>
+					<td>{$v.start_time|date="Y-m-d H:i:s",###}</td>
+					<td style="width:400px">
+						<a href="#" class="layui-btn layui-btn-sm layui-btn-normal edit">编辑</a>
+						<a href="{:url('Pow/state','id='.$v['id'])}" ><?php if($v['state']=='正常'){echo "<span class='layui-btn layui-btn-sm'>隐藏</span>";}else{echo "<span class='layui-btn layui-btn-sm layui-btn-warm'>显示</span>";} ?></a>
+						<a href="{:url('Pow/del','id='.$v['id'])}" class="layui-btn layui-btn-sm layui-btn-danger">删除</a>
+					</td>
+				</tr>
+				{/volist}
+				</tbody>
+			</table>
+		</div>
+
+		<!--添加-->
+		<div class="model">
+			<div class="head">
+				<span>编辑</span>
+				<a href="javascript:" class="close">×</a>
+			</div>
+			<div class="content">
+				<form action="{:url('Pow/insert')}" method="post">
+					<div class="wrap">
+						<label>父级</label>
+						<select id="parent" name="parent_id">
+							<option value="0">无</option>
+							{volist name='rows' id='ca'}
+							<option value="{$ca.id}">{$ca.name_txt}</option>
+							{/volist}
+						</select>
+					</div>
+					<div class="wrap">
+						<label>规则</label>
+						<input type="text" name="pow_url" id="rule" value="" required oninvalid="setCustomValidity('规则不能为空') oninput="setCustomValidity('')" placeholder='控制器名/方法名''/>
+					</div>
+					<div class="wrap">
+						<label>标题</label>
+						<input type="text" name="pow_name" id="title" value="" required oninvalid="setCustomValidity('标题不能为空') oninput="setCustomValidity('')" />
+					</div>
+					<div class="wrap">
+						<label>排序</label>
+						<input type="text" name="sort" id="sort" value="5" />
+					</div>
+					<div class="wrap">
+						<label>规则条件</label>
+						<textarea rows="" cols="" name="pow_url_term"></textarea>
+					</div>
+					<div class="wrap">
+						<label>备注</label>
+						<textarea rows="" cols="" name="remarks"></textarea>
+					</div>
+					<div class="wrap">
+						<label>状态</label>
+						<p class="status">
+							<span><input type="radio" name="state" id="" checked="checked" value="正常"/>正常</span>
+							<span><input type="radio" name="state" id="" value="隐藏"/>隐藏</span>
+						</p>
+					</div>
+					<div class="wrap btn">
+						<input type="submit" class="save" value="确定"/>
+						<input type="reset" class="reset" value="重置"/>
+					</div>
+				</form>
+			</div>
+		</div>
+		<!--修改-->
+		<div class="model_edit">
+			<div class="head">
+				<span>修改</span>
+				<a href="javascript:" class="close_edit">×</a>
+			</div>
+			<div class="content">
+				<form action="{:url('Pow/up')}" method="post">
+					<input type="hidden" id="id" name="id">
+					<div class="wrap">
+						<label>父级</label>
+						<select id="r2" name="parent_id">
+							<option value="0">无</option>
+							{volist name='rows' id='ca'}
+							<option value="{$ca.id}">{$ca.name_txt}</option>
+							{/volist}
+						</select>
+					</div>
+					<div class="wrap">
+						<label>规则</label>
+						<input type="text" name="pow_url" id="r1" value="" required oninvalid="setCustomValidity('规则不能为空') oninput="setCustomValidity('')" placeholder='控制器名/方法名''/>
+					</div>
+					<div class="wrap">
+						<label>标题</label>
+						<input type="text" name="pow_name" id="r3" value="" required oninvalid="setCustomValidity('标题不能为空') oninput="setCustomValidity('')" />
+					</div>
+					<div class="wrap">
+						<label>排序</label>
+						<input type="text" name="sort" id="r8" value="5" />
+					</div>
+					<div class="wrap">
+						<label>规则条件</label>
+						<textarea rows="" cols="" name="pow_url_term" id="r4"></textarea>
+					</div>
+					<div class="wrap">
+						<label>备注</label>
+						<textarea rows="" cols="" name="remarks" id="r5"></textarea>
+					</div>
+					<div class="wrap">
+						<label>状态</label>
+						<p class="status">
+							<span><input type="radio" name="state" id="r6" value="正常"/>正常</span>
+							<span><input type="radio" name="state" id="r7" value="隐藏"/>隐藏</span>
+						</p>
+					</div>
+					<div class="wrap btn">
+						<input type="submit" class="save" value="确定"/>
+						<input type="reset" class="reset" value="重置"/>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<script src="/static/jquery-1.9.1.min.js"></script>
+		<script type="text/javascript">
+			$('#dialog').on('click', function(){
+				$('.model').show();
+			})
+			$('.close').on('click', function(){
+				$('.model').hide();
+			})
+
+//			edit
+			$('.edit').on('click', function(){
+				$('.model_edit').show();
+			})
+			$('.close_edit').on('click', function(){
+				$('.model_edit').hide();
+			})
+
+
+			$('.edit').click(function(){
+				let val = $(this).parents('tr').find('td').eq(1).text();
+				$.ajax({
+					url:"/index/Pow/up_edit",
+					type:"post",
+					data:{"id":val},
+					success:function (data) {
+						$('#r1').val(data.pow_url)
+						$('#r2').val(data.parent_id)
+						$('#r3').val(data.pow_name)
+						$('#r4').val(data.pow_url_term)
+						$('#r5').val(data.remarks)
+						$('#id').val(data.id)
+						$('#r8').val(data.sort)
+						let state=data.state;
+						if(state=='隐藏'){
+							$('#r7').prop('checked',true)
+						}else{
+							$('#r6').prop('checked',true)
+						}
+					}
+				})
+			})
+
+		</script>
+		<style>
+			ul{margin:0 auto;overflow: hidden;width:100px}
+			ul li{float:left;list-style: none;padding:6px 10px;text-align:center;border:1px solid red;margin:0 4px}
+			.button1{margin:2rem auto;width:600px;}
+			.button1 a{padding:15px 60px;border-radius:4px;margin:0 10px;color:#fff;font-size:1.2em}
+			th{text-align:center}
+		</style>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	</body>
+</html>

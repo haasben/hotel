@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>后台管理系统</title>
+		<link href="/images/index.css" type="text/css" rel="stylesheet"/>
+		<script src="/images/jquery.js"></script>
+		<link rel="stylesheet" href="/images/css.css">
+		<link rel="stylesheet" href="/images/boot.css">	</head>
+	</head>
+	<body>
+				
+		<div class="note">
+			<h4><a href="#" style="background:#75bdb6;padding:5px;border:none;color:#fff" id="dialog">商城维护</a></h4>
+			<table class="news_list">
+				<thead>
+					<tr>
+						<th>商城状态</th>
+						<th>上次修改时间</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody>
+				{volist name='res' id='r'}
+					<tr>
+						<td><?php if($r['state']==0){echo "<span style='color:red'>维护中</span>";}else{echo "<span style='color:#06d2bf'>开放中</span>";} ?></td>
+                        <td>{$r.update_time|date="Y-m-d H:i:s",###}</td>
+                        <td>
+							<a href="{:url('storeseting/seting_state','id='.$r.id)}" ><?php if($r['state']=='0'){echo "<span class='btn btn-success'>开放</span>";}else{echo "<span class='btn btn-primary'>维护</span>";} ?></a>
+						</td>
+					</tr>
+				{/volist}
+				</tbody>
+			</table>
+		</div>
+		
+		<script src="/static/jquery-1.9.1.min.js"></script>
+		<script type="text/javascript">
+		</script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	</body>
+</html>

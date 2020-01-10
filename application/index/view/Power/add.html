@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>角色</title>
+	<link href="/images/index.css" type="text/css" rel="stylesheet"/>
+	<script src="/images/jquery.js"></script>
+	<link rel="stylesheet" href="/images/css.css">
+	<link rel="stylesheet" href="/images/boot.css">
+	<link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+	<style type="text/css">
+		.layui-table th{text-align: center;font-weight: bold;}
+		.pagination{margin-left: 35px;}
+		.layui-table td{text-align: center;}
+	</style>
+<body>
+<div class="note">
+	<h4>
+		<span>角色列表</span>
+		<a href="#" style="background:#75bdb6;padding:5px;border:none;color:#fff" id="dialog">新增角色</a>
+	</h4>
+	<table class="news_list layui-table" style="width: 96%; margin: 12px auto;">
+		<thead>
+		<tr>
+			<th>ID</th>
+			<th>角色名称</th>
+			<th>创建时间</th>
+			<th>操作</th>
+		</tr>
+		</thead>
+		<tbody>
+		{volist name='cate' id='v'}
+		<tr>
+			<td>{$v.id}</td>
+			<td>{$v.name}</td>
+			<td width="25%">{$v.state_time|date="Y-m-d H:i:s",###}</td>
+			<td style="width:30%">
+				<a href="#" class="layui-btn layui-btn-sm layui-btn-primary select">查看</a>
+				<a href="#" class="layui-btn layui-btn-sm edit">编辑</a>
+				<a href="{:url('Power/pow','id='.$v.id)}" class="layui-btn layui-btn-sm layui-btn-normal">授权</a>
+				<a href="{:url('Power/del','id='.$v.id)}" class="layui-btn layui-btn-sm layui-btn-danger">删除</a>
+			</td>
+		</tr>
+		{/volist}
+		</tbody>
+	</table>
+	<div style="text-align: center;">
+		{$cate->render()}
+	</div>
+</div>
+<!--新增角色-->
+<div class="model">
+	<div class="head">
+		<span>编辑</span>
+		<a href="javascript:" class="close">×</a>
+	</div>
+	<div class="content">
+		<form action="{:url('Power/insert')}" method="post">
+			<div class="wrap">
+				<label>角色名称</label>
+				<input type="text" name="name" id="rule" value="" required oninvalid="setCustomValidity('角色名称不能为空') oninput="setCustomValidity('')"/>
+			</div>
+			<div class="wrap">
+				<label>角色说明</label>
+				<textarea rows="" cols="" name="power_content"></textarea>
+			</div>
+			<div class="wrap btn">
+				<input type="submit" class="save" value="确定"/>
+				<input type="reset" class="reset" value="重置"/>
+			</div>
+		</form>
+	</div>
+</div>
+<!--查看-->
+<div class="model_select">
+	<div class="head">
+		<span>查看</span>
+		<a href="javascript:" class="close_select">×</a>
+	</div>
+	<div class="content">
+		<form action="{:url('Power/insert')}" method="post">
+			<div class="wrap">
+				<label>角色名称</label>
+				<span id="r1"></span>
+			</div>
+			<div class="wrap">
+				<label>角色说明</label>
+				<span id="r2"></span>
+			</div>
+		</form>
+	</div>
+</div>
+<!--编辑-->
+<div class="model_edit">
+	<div class="head">
+		<span>修改</span>
+		<a href="javascript:" class="close_edit">×</a>
+	</div>
+	<div class="content">
+		<form action="{:url('Power/update')}" method="post">
+			<input type="hidden" id="id" name="id">
+			<div class="wrap">
+				<label>角色名称</label>
+				<input type="text" name="name" id="r3" value="" required oninvalid="setCustomValidity('角色名称不能为空') oninput="setCustomValidity('')"/>
+			</div>
+			<div class="wrap">
+				<label>角色说明</label>
+				<textarea rows="" cols="" name="power_content" id="r4"></textarea>
+			</div>
+			<div class="wrap btn">
+				<input type="submit" class="save" value="确定"/>
+				<input type="reset" class="reset" value="重置"/>
+			</div>
+		</form>
+	</div>
+</div>
+<script src="/static/jquery-1.9.1.min.js"></script>
+<script type="text/javascript">
+//	添加
+	$('#dialog').on('click', function(){
+		$('.model').show();
+	})
+	$('.close').on('click', function(){
+		$('.model').hide();
+	})
+
+//查看
+	$('.select').on('click', function(){
+		$('.model_select').show();
+	})
+	$('.close_select').on('click', function() {
+		$('.model_select').hide();
+	})
+
+//修改
+	$('.edit').on('click', function(){
+		$('.model_edit').show();
+	})
+	$('.close_edit').on('click', function() {
+		$('.model_edit').hide();
+	})
+
+//点击查看事件
+	$('.select').click(function(){
+		let val = $(this).parents('tr').find('td').eq(0).text();
+		$.ajax({
+			url:"/index/Power/select",
+			type:"post",
+			data:{"id":val},
+			success:function (data) {
+					$('#r1').text(data.name)
+					$('#r2').text(data.power_content)
+			}
+		})
+	})
+
+//编辑回显
+	$('.edit').click(function(){
+		let val = $(this).parents('tr').find('td').eq(0).text();
+		$.ajax({
+			url:"/index/Power/power_edit",
+			type:"post",
+			data:{"id":val},
+			success:function (data) {
+				$('#r3').val(data.name);
+				$('#r4').val(data.power_content);
+				$('#id').val(data.id);
+				let name=data.name;
+				console.log(name);
+				if(name=='超级管理员'){
+				    $('#r3').prop('readonly',true)
+				}else{
+                    $('#r3').prop('readonly',false)
+				}
+			}
+		})
+	})
+</script>
+<style>
+	.button1{margin:2rem auto;width:600px;}
+	.button1 a{padding:15px 60px;border-radius:4px;margin:0 10px;color:#fff;font-size:1.2em}
+	th{text-align:center}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>轮播图配置</title>
+		<link href="/images/index.css" type="text/css" rel="stylesheet"/>
+		<link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+	</head>
+	<body>
+		<div class="note">
+			<h4>系统配置</h4>
+			<form action="{:url('Platform/edit')}" method="post" enctype="multipart/form-data" class="form_control">
+				<input type="hidden" value="{$row.id}" name="id">
+				
+				<div class="f_box">
+					<span>平台名称</span>
+					<input type="text" name="platform_name" class="inbox" value="{$row.platform_name}"/>
+				</div>
+				<div class="f_box">
+					<span>订单自动关闭期限(天)</span>
+					<input type="text" name="trem" value="{$row.trem}"/>
+				</div>
+				<div class="f_box">
+					<span>平台LOGO</span>
+					<img style="height:60px;margin-right: 20px;" src="{$row.logo_img}" alt="">
+					<button type="button" class="layui-btn" id="upload-img">
+						<i class="layui-icon">&#xe67c;</i>点击上传
+					</button>
+					<input type="file" name="logo_img" id="upload-file" style="display: none;"/>
+				</div>
+				<div class="f_box">
+					<span>平台维护开关</span>
+					<p>
+						<span><input type="radio" name="defend" class=""  value="1" <?php if($row['defend']==1){echo 'checked';} ?>/>开</span>
+						<span><input type="radio" name="defend" class=""  value="2" <?php if($row['defend']==2){echo 'checked';} ?>/>关</span>
+					</p>
+				</div>
+				<div class="f_box">
+					<span>小程序appid</span>
+					<input type="text" name="appid" value="{$row.appid}"/>
+				</div>
+				<div class="f_box">
+					<span>AppSecret</span>
+					<input type="text" name="appsecret" value="{$row.appsecret}"/>
+				</div>
+				<div class="f_box">
+					<span>备案号</span>
+					<input type="text" name="record" value="{$row.record}"/>
+				</div>
+				<div class="f_box">
+					<span>CDN地址</span>
+					<input type="text" name="cdn" value="{$row.cdn}"/>
+				</div>
+				<div class="f_box">
+					<input type="submit" value="提交"/>
+				</div>
+				<!-- <table class="news_form">
+					<tr>
+						<td>平台名称</td>
+						<td><input type="text" name="platform_name" class="inbox" value="{$row.platform_name}"/></td>
+					</tr>
+					<tr>
+						<td>订单自动关闭期限(天)</td>
+						<td><input type="text" name="trem" class="inbox" value="{$row.trem}"/></td>
+					</tr>
+					<tr>
+						<td>平台LOGO</td>
+						<td><input type="file" name="logo_img" class="inbox"/><img style="width:60px;height:60px" src="{$row.logo_img}" alt=""></td>
+					</tr>
+					<tr>
+						<td>平台维护开关</td>
+						<td>
+							<input type="radio" name="defend" class=""  value="1" <?php if($row['defend']==1){echo 'checked';} ?>/>开
+							<input type="radio" name="defend" class=""  value="2" <?php if($row['defend']==2){echo 'checked';} ?>/>关
+						</td>
+					</tr>
+					<tr>
+						<td>小程序appid</td>
+						<td><input type="text" name="appid" class="inbox" value="{$row.appid}"/></td>
+					</tr>
+					<tr>
+						<td>AppSecret</td>
+						<td><input type="text" name="appsecret" class="inbox" value="{$row.appsecret}"/></td>
+					</tr>
+					<tr>
+						<td>备案号</td>
+						<td><input type="text" name="record" class="inbox" value="{$row.record}"/></td>
+					</tr>
+					<tr>
+						<td>CDN地址</td>
+						<td><input type="text" name="cdn" class="inbox" value="{$row.cdn}"/></td>
+					</tr>
+					<tr>
+						<td><input type="submit" value="提交"/></td>
+					</tr>
+				</table> -->
+			</form>
+		</div>
+		
+		<script src="/static/jquery-1.9.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			$('#upload-img').click(function(){
+				$('#upload-file').click();
+			})
+		</script>
+	</body>
+</html>

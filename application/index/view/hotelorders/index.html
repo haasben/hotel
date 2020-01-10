@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>酒店订单管理</title>
+		<link href="/images/index.css" type="text/css" rel="stylesheet"/>
+		<link rel="stylesheet" href="/images/css.css">
+		<link rel="stylesheet" href="/images/boot.css">	
+		<link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+		<style>
+			.button1{margin:2rem auto;width:600px;}
+			.button1 a{padding:15px 60px;border-radius:4px;margin:0 10px;color:#fff;font-size:1.2em}
+			th{text-align:center}
+			tr>td{text-align: center;}
+			#price{display: none;}
+			.layui-table th{text-align: center;font-weight: bold;}
+			.pagination{margin-left: 35px;}
+		</style>
+	</head>
+	<body>
+		<div class="note">
+			<h4>
+				<a href="#" style="background:#75bdb6;padding:5px;border:none;color:#fff" id="dialog">添加订单</a>
+			</h4>
+				<table class="news_form layui-table" style="width: 96%;margin: 12px auto;">
+					<tr>
+						<th>ID</th>
+						<th>订单编号</th>
+						<th>用户名</th>
+						<th>用户头像</th>
+						<th>预计入住</th>
+						<th>退房时间</th>
+                        <th>房型</th>
+                        <th>房号</th>
+						<th>状态</th>
+						<th>操作</th>
+					</tr>
+					{volist name='list' id='v'}
+					<tr>
+						<td>{$v.id}</td>
+						<td>{$v.ordernum}</td>
+						<td>{$v.openid}</td>
+						<td><img src="{$v.header}" /> </td>
+						<td><?php echo date("m-d",$v['intime'])?></td>
+						<td><?php if(empty($v['out_time'])){echo "暂未入住";}else{echo date("m-d",$v['out_time']);}?></td>
+						<td>{$v.room_type}</td>
+						<td>{$v.room}</td>
+						<td><?php if($v['is_del'] == 1){echo "订单已取消";}else{if($v['status'] == 0){echo "未支付";}else if($v['status'] == 1){echo "已支付，待入住";}else if($v['status'] == 2){echo "正在入住";}else if($v['status']==3){
+						echo "已退房，待评论";}else if($v['status'] == 4){echo "已评论";}else if($v['status'] ==5){echo "订单已完成";}}?></td>
+						<td style="width:200px">
+							<a href="#" class="layui-btn layui-btn-sm layui-btn-normal showorders">编辑<input type="hidden" value="{$v.id}" class="ids"></a>
+								<?php if($v['is_del'] != 0){echo "";}else{
+							 if($v['status'] == 0){ ?><a href="{:url('hotelorders/changestatus','id='.$v['id'])}" class="layui-btn layui-btn-sm layui-btn-success">支付</a><?php }
+								else if($v['status'] == 1){ ?><a href="{:url('hotelorders/changestatus','id='.$v['id'])}" class="layui-btn layui-btn-sm layui-btn-success">入住</a><?php }
+								else if($v['status'] == 2){ ?><a href="{:url('hotelorders/changestatus','id='.$v['id'])}" class="layui-btn layui-btn-sm layui-btn-success">退房</a><?php }
+								else if($v['status'] == 3){ ?><a href="#" class="layui-btn layui-btn-sm layui-btn-success addcomment"><input type="hidden" name="myids" class="myids" value="{$v['id']}">评论</a><?php ;}
+								else if($v['status'] == 4){ ?><a href="{:url('hotelorders/changestatus','id='.$v['id'])}" class="layui-btn layui-btn-sm layui-btn-success">已评</a><?php }
+							?>
+							</a><?php }?>
+							<a href="{:url('hotelorders/delete','id='.$v['id'])}" class="layui-btn layui-btn-sm layui-btn-danger">
+								<?php if($v['is_del'] == 0 && $v['status'] != 5){echo "取消";}else{echo "删除";} ?>
+							</a>
+						</td>
+					</tr>
+					{/volist}
+				</table>
+			{$list->render()}
+		</div>
+
+		<div class="model modeladd">
+			<div class="head">
+				<span>添加订单</span>
+				<a href="javascript:" class="close">×</a>
+			</div>
+			<div class="content">
+				<form action="{:url('hotelorders/insert')}" method="post" enctype="multipart/form-data">
+					<div class="wrap">
+						<label>订单用户</label>
+						<select id="parents" name="openid">
+							<option value="0">请选择用户</option>
+							{volist name='users' id='va'}
+							<option value="{$va.openid}">{$va.username}</option>
+							{/volist}
+						</select>
+					</div>
+					<div class="wrap">
+						<label>会员头像</label>
+						<input type="file" name="header" />
+					</div>
+					<div class="wrap">
+						<label>房型</label>
+						<select id="parent" name="room_type">
+							<option value="0">请选择房型</option>
+							{volist name='roomtypes' id='types'}
+							<option value="{$types.title}">{$types.title}</option>
+							{/volist}
+						</select>
+					</div>
+					<div class="wrap">
+						<label>入住时间</label>
+						<input type="date" name="intime" />
+					</div>
+					<div class="wrap btn">
+						<input type="submit" class="save" value="确定"/>
+						<input type="reset" class="reset" value="重置"/>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="model modelshow">
+			<div class="head">
+				<span>编辑订单</span>
+				<a href="javascript:" class="close">×</a>
+			</div>
+			<div class="content">
+				<form action="{:url('hotelorders/editorders')}" method="post" enctype="multipart/form-data">
+					<input type="hidden" name="id">
+					<div class="wrap">
+						<label>订单编号</label>
+						<input type="text" name="ordernum" readonly/>
+					</div>
+					<div class="wrap">
+						<label>用户openid</label>
+						<input type="text" name="openid" readonly/>
+					</div>
+					<div class="wrap headers">
+						<label>头像</label>
+					</div>
+					<div class="wrap">
+						<label>房型</label>
+						<input type="text" name="room_type" readonly/>
+					</div>
+					<div class="wrap rooms">
+						<label>房间</label>
+					</div>
+					<div class="wrap">
+						<label>入住时间</label>
+						<input type="text" name="intime" readonly/>
+					</div>
+					<div class="wrap orderprice">
+						<label>价格</label>
+						<input type="text" name="orderprice" readonly/>
+					</div>
+					<div class="wrap btn">
+						<input type="submit" class="save" value="确定"/>
+						<input type="reset" class="reset" value="重置"/>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		</div><div class="model modelorderadd">
+			<div class="head">
+				<span>添加评论</span>
+				<a href="javascript:" class="close">×</a>
+			</div>
+			<div class="content">
+				<form action="{:url('hotelorders/addcomment')}" method="post" enctype="multipart/form-data">
+					<input type="hidden" name="myid" />
+					<div class="wrap">
+						<label>评论</label>
+						<textarea name="content"></textarea>
+					</div>
+					<div class="wrap btn">
+						<input type="submit" class="save" value="确定"/>
+						<input type="reset" class="reset" value="重置"/>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<script src="/static/jquery-1.9.1.min.js"></script>
+		<script src="/layui/layui.js"></script>
+
+		<script type="text/javascript">
+			$('#dialog').on('click', function(){
+				$('.modeladd').show();
+			})
+			$('.close').on('click', function(){
+				$('.modeladd').hide();
+			})
+			$('.showorders').on('click', function(){
+				var id = $(this).children().val();
+				$('.userheader').remove();
+				$('.clearroom').remove();
+				$('.choseroom').remove();
+				$.ajax({
+					type: "get",//请求方式有post，get请求方式
+					url: '/index/hotelorders/show/id/'+id,//请求的方法的路径
+					dataType: 'json',//请求参数的格式为json.另外还有text等
+					success: function(data){
+						var data = JSON.parse(data);
+						$('input[name="id"]').val(data.id);
+						$('input[name="ordernum"]').val(data.ordernum);
+						$('input[name="openid"]').val(data.openid);
+						if(data.header.length>0){
+							$('.headers').append("<img src='"+data.header+"' class='userheader'/>");
+						}else{
+							$('.headers').append("<input type='text' value='暂无头像' class='userheader' readonly/>");
+						}
+						$('input[name="room_type"]').val(data.room_type);
+						if(data.status == 0){
+							$('.rooms').append("<input type='text' name='room' class='choseroom' value='订单未支付' readonly />");
+						}else{
+							if(data.room == null || data.room == ""){
+								$('.rooms').append("<select name='room' class='choseroom'>");
+								$('.choseroom').append('<option value="0">请选择房间</option>');
+								for(var i=0;i<data.rooms.length;i++){
+									$('.choseroom').append("<option value='"+data.rooms[i].name+"' class='clearroom'>"+data.rooms[i].name+"</option>");
+								}
+								$('.rooms').append("</select>");
+							}else{
+								$('.rooms').append("<input type='text' name='room' class='choseroom' value='"+data.room+"'>");
+							}
+						}
+						var time = new Date(data.intime*1000);
+						$('input[name="intime"]').val(time.getMonth()+1+'-'+time.getDate());
+						$('input[name="orderprice"]').val(data.price);
+
+					}
+				})
+				$(".modelshow").show();
+			})
+			$('.close').on('click', function(){
+				$('.modelshow').hide();
+			})
+			$('.addcomment').on('click', function(){
+				var id = $(this).find('.myids').val();
+				$('input[name="myid"]').val(id);
+				$('.modelorderadd').show();
+			})
+			$('.close').on('click', function(){
+				$('.modelorderadd').hide();
+			})
+		</script>
+		
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	</body>
+</html>

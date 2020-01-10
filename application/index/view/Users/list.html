@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>后台管理系统</title>
+		<link href="/images/index.css" type="text/css" rel="stylesheet"/>
+		<link rel="stylesheet" href="/images/css.css">
+		<link rel="stylesheet" href="/images/boot.css">
+		<link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+		<style type="text/css">
+			.layui-table th{text-align: center;font-weight: bold;}
+			.pagination{margin-left: 35px;}
+			.layui-table td{text-align: center;}
+		</style>
+
+	</head>
+	<body>
+		<div class="note">
+			<h4>
+				<span>系统用户列表</span>
+				<a href="#" style="background:#75bdb6;padding:5px;border:none;color:#fff" id="add">添加管理员</a>
+			</h4>
+			<table class="news_list layui-table" style="width: 96%; margin: 12px auto;">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>用户名</th>
+						<th>电话</th>
+						<th>邮箱</th>
+						<th>角色</th>
+						<th>状态</th>
+						<th>创建时间</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody>
+				{volist name='rows' id='row'}
+					<tr>
+						<td>{$row.id}</td>
+						<td>{$row.username}</td>
+						<td>{$row.phone}</td>
+						<td>{$row.email}</td>
+						<td>{$row.name}</td>
+						<td><?php if($row['state']=='使用中'){echo "<span style='color:#00EB10'>使用中";}else{echo "<span style='color:red'>禁用";} ?></td>
+						<td width="180px">{$row.start_time|date="Y-m-d H:i:s",###}</td>
+						<td>
+							<a href="{:url('Users/del','id='.$row.id)}" class="layui-btn layui-btn-sm layui-btn-danger">删除</a>
+							<a href="{:url('Users/state','id='.$row.id)}" ><?php if($row['state']=='使用中'){echo "<span class='layui-btn layui-btn-sm'>禁用</span>";}else{echo "<span class='layui-btn layui-btn-sm layui-btn-warm'>解除禁用</span>";} ?></a>
+							<a href="#" class="layui-btn layui-btn-sm layui-btn-normal role role_js">角色</a>
+						</td>
+					</tr>
+				{/volist}
+				</tbody>
+			</table>
+			<div style="text-align: center;">
+				{$rows->render()}
+			</div>
+		</div>
+		<!--添加模态框-->
+		<div class="model">
+			<div class="head">
+				<span>编辑</span>
+				<a href="javascript:" class="close">×</a>
+			</div>
+			<div class="content">
+				<form action="{:url('Users/insert')}" method="post">
+					<div class="wrap">
+						<label>用户名</label>
+						<input type="text" name="username" value="" required oninput="setCustomValidity('')" placeholder='用户名确定以后不可修改'/>
+					</div>
+					<div class="wrap">
+						<label>密码</label>
+						<input type="password" name="password" value="" required oninput="setCustomValidity('')"/>
+					</div>
+					<div class="wrap">
+						<label>确认密码</label>
+						<input type="password" name="pwd2" value="" required oninput="setCustomValidity('')"/>
+					</div>
+					<div class="wrap">
+						<label>电话</label>
+						<input type="text" name="phone" value="" required oninput="setCustomValidity('')"/>
+					</div>
+					<div class="wrap">
+					<label>邮箱</label>
+					<input type="email" name="email" value="" required oninput="setCustomValidity('')"/>
+				</div>
+					<div class="wrap">
+						<label>角色</label>
+						<select name="role_id" id="">
+							<option value="0">--请选择管理员的角色--</option>
+							{volist name='power' id='pow'}
+							<option value="{$pow.id}">{$pow.name}</option>
+							{/volist}
+						</select>
+					</div>
+					<div class="wrap">
+						<label>状态</label>
+						<input type="radio" name="state" checked value="使用中">正常
+						<input type="radio" name="state" value="禁用">禁用
+					</div>
+					<div class="wrap btn">
+						<input type="submit" class="save" value="确定"/>
+						<input type="reset" class="reset" value="重置"/>
+					</div>
+				</form>
+			</div>
+		</div>
+		<!--修改模态框-->
+		<!--角色-->
+		<div class="model_select">
+			<div class="head">
+				<span>角色</span>
+				<a href="javascript:" class="close_js">×</a>
+			</div>
+			<div class="content">
+				<form action="{:url('Users/role_up')}" method="post">
+					<input type="hidden" id="id" name="id">
+					<div class="wrap">
+						<label>用户名</label>
+						<input type="text" id="r1" name="username" value="" readonly/>
+					</div>
+					<div class="wrap">
+						<label>角色</label>
+						<select name="role_id" id="r2">
+							{volist name='power' id='pow'}
+							<option value="{$pow.id}">{$pow.name}</option>
+							{/volist}
+						</select>
+					</div>
+					<div class="wrap btn">
+						<input type="submit" class="save" value="确定"/>
+						<input type="reset" class="reset" value="重置"/>
+					</div>
+				</form>
+			</div>
+		</div>
+		<script src="/static/jquery-1.9.1.min.js"></script>
+		<script>
+			//	添加
+			$('#add').on('click', function(){
+				$('.model').show();
+			})
+			$('.close').on('click', function(){
+				$('.model').hide();
+			})
+            //	角色
+            $('.role').on('click', function(){
+                $('.model_select').show();
+            })
+            $('.close_js').on('click', function(){
+                $('.model_select').hide();
+            })
+			//回显
+			$('.role_js').click(function () {
+                let val = $(this).parents('tr').find('td').eq(0).text();
+                $.ajax({
+                    url:"/index/Users/role_js",
+                    type:"post",
+                    data:{"id":val},
+                    success:function (data) {
+                        $('#r1').val(data.username)
+                        $('#r2').val(data.role_id)
+                        $('#id').val(data.id)
+                    }
+                })
+            })
+		</script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	</body>
+</html>

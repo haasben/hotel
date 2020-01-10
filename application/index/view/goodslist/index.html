@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>后台管理系统</title>
+		<link href="/images/index.css" type="text/css" rel="stylesheet"/>
+		<script src="/images/jquery.js"></script>
+		<link rel="stylesheet" href="/images/css.css">
+		<link rel="stylesheet" href="/images/boot.css">	</head>
+	</head>
+	<body>
+				
+		<div class="note">
+			<h4><a href="#" style="background:#75bdb6;padding:5px;border:none;color:#fff" id="dialog">添加商品</a></h4>
+			<table class="news_list">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>排序</th>
+						<th>商品名</th>
+						<th>图片</th>
+						<th>单价(元)</th>
+						<th>参与折扣</th>
+						<th>参与会员折扣</th>
+						<th>参与分销</th>
+						<th>库存</th>
+						<th>状态</th>
+						<th>添加时间</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody>
+				{volist name='list' id='r'}
+					<tr>
+						<td>{$r.id}</td>
+						<td>{$r.sort}</td>
+						<td>{$r.name}</td>
+						<td><img style="width:60px;height:60px" src="{$r.pic}" alt=""></td>
+						<td>{$r.price}</td>
+						<td><?php if($r['discount']=='0'){echo "<span class=''>参与</span>";}else{echo "<span class=''>不参与</span>";} ?></td>
+						<td><?php if($r['member_discount']=='0'){echo "<span class=''>参与</span>";}else{echo "<span class=''>不参与</span>";} ?></td>
+						<td><?php if($r['distribution']=='0'){echo "<span class=''>参与</span>";}else{echo "<span class=''>不参与</span>";} ?></td>
+						<td>{$r.stock}</td>
+						<td><?php if($r['state']==0){echo "<span style='color:#00FF6F'>销售中</span>";}else{echo "<span style='color:red'>停止销售</span>";} ?></td>
+						<td>{$r.create_time|date="Y-m-d H:i:s",###}</td>
+						<td style="width: 400px;">
+							<a href="#" class="btn btn-info img_edit">修改</a>
+							<a href="{:url('goodslist/goods_sort','id='.$r.id)}" class="btn btn-warning">商品类别</a>
+							<a href="{:url('goodslist/goods_state','id='.$r.id)}" ><?php if($r['state']=='0'){echo "<span class='btn btn-success'>停止销售</span>";}else{echo "<span class='btn btn-primary'>销售中</span>";} ?></a>
+							<a href="{:url('goodslist/goods_del','id='.$r.id)}" class="btn btn-danger">删除</a>
+						</td>
+					</tr>
+				{/volist}
+				</tbody>
+			</table>
+			<div style="text-align:center">
+			{$list->render()}
+			</div>
+		</div>
+		<!--添加-->
+		<div class="model">
+			<div class="head">
+				<span>添加商品</span>
+				<a href="javascript:" class="close">×</a>
+			</div>
+			<div class="content">
+				<form action="{:url('goodslist/goods_add')}" method="post" enctype="multipart/form-data">
+					<div class="wrap">
+						<label>商品名</label>
+						<input type="text" name="name" value="" required oninvalid="setCustomValidity('
+						不能为空') oninput="setCustomValidity('')"/>
+					</div>
+					<div class="wrap">
+						<label>排序</label>
+						<input type="text" name="sort" value=""/>
+					</div>
+					<div class="wrap">
+						<label>图片</label>
+						<input type="file" name="pic" value="" required oninvalid="setCustomValidity('
+						不能为空') oninput="setCustomValidity('')"/>
+					</div>
+					<div class="wrap">
+						<label>单价(元)</label>
+						<input type="text" name="price" value="" required oninvalid="setCustomValidity('
+						不能为空') oninput="setCustomValidity('')"/>
+					</div>
+					<div class="wrap">
+						<label>是否参与折扣</label>
+						<input type="radio" name="discount" value="1"/>是
+						<input type="radio" name="discount" value="0" checked/>否
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<label>是否参与会员折扣</label>
+						<input type="radio" name="member_discount" value="1"/>是
+						<input type="radio" name="member_discount" value="0" checked/>否
+						<label>是否参与分销</label>
+						<input type="radio" name="distribution" value="1"/>是
+						<input type="radio" name="distribution" value="0" checked/>否
+					</div>
+					<div class="wrap">
+						<label>库存</label>
+						<input type="text" name="stock" value=""/>
+					</div>
+					<div class="wrap">
+						<label>状态</label>
+						<input type="radio" name="state" value="0" checked>销售中
+						<input type="radio" name="state" value="1">售空
+					</div>
+					<div class="wrap btn">
+						<input type="submit" class="save" id="btn" value="确定"/>
+						<input type="reset" class="reset" value="重置"/>
+					</div>
+				</form>
+			</div>
+		</div>
+		<!--修改-->
+		<div class="model_edit">
+			<div class="head">
+				<span>修改商品</span>
+				<a href="javascript:" class="close_edit">×</a>
+			</div>
+			<div class="content">
+				<form action="{:url('goodslist/goods_update')}" method="post" enctype="multipart/form-data">
+					<input type="hidden" name="id" id="id">
+					<div class="wrap">
+						<label>商品名</label>
+						<input type="text" id="name" name="name" value="" required oninvalid="setCustomValidity('
+						不能为空') oninput="setCustomValidity('')"/>
+					</div>
+					<div class="wrap">
+						<label>排序</label>
+						<input type="text" id="sort" name="sort" value=""/>
+					</div>
+					<div class="wrap">
+						<label>图片</label>
+						<img src="" id="img" alt="">
+						<input type="file" name="pic" value=""/>
+					</div>
+					<div class="wrap">
+						<label>单价(元)</label>
+						<input type="text" id="price" name="price" value="" required oninvalid="setCustomValidity('
+						不能为空') oninput="setCustomValidity('')"/>
+					</div>
+					<div class="wrap">
+						<label>是否参与折扣</label>
+						<input type="radio" id="r1" name="discount" value="1"/>是
+						<input type="radio" id="r2" name="discount" value="0"/>否
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<label>是否参与会员折扣</label>
+						<input type="radio" id="r3" name="member_discount" value="1"/>是
+						<input type="radio" id="r4" name="member_discount" value="0"/>否
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<label>是否参与分销</label>
+						<input type="radio" id="r5" name="distribution" value="1"/>是
+						<input type="radio" id="r6" name="distribution" value="0"/>否
+					</div>
+					<div class="wrap">
+						<label>库存</label>
+						<input type="text" id="stock" name="stock" value=""/>
+					</div>
+					<div class="wrap btn">
+						<input type="submit" class="save" id="btn" value="确定"/>
+						<input type="reset" class="reset" value="重置"/>
+					</div>
+				</form>
+			</div>
+		</div>
+		<script src="/static/jquery-1.9.1.min.js"></script>
+		<script type="text/javascript">
+			//添加
+			$('#dialog').on('click', function(){
+				$('.model').show();
+			})
+			$('.close').on('click', function(){
+				$('.model').hide();
+			})
+			//修改
+			$('.img_edit').on('click', function(){
+				$('.model_edit').show();	
+			})
+			$('.close_edit').on('click', function(){
+				$('.model_edit').hide();
+			})
+			//修改菜品
+			$('.img_edit').click(function(){
+				let val = $(this).parents('tr').find('td').eq(0).text();
+				$.ajax({
+					url:'/index/goodslist/goods_edit',
+					type:'post',
+					data:{'id':val},
+					success:function(data){
+						$('#id').val(data.id)
+						$('#name').val(data.name)
+						$('#sort').val(data.sort)
+						$('#content').val(data.content)
+						$('#price').val(data.price)
+						$('#stock').val(data.stock)
+						if(data.discount==0){
+							$('#r2').prop('checked',true);
+						}else{
+							$('#r1').prop('checked',true);
+						}
+						if(data.member_discount==0){
+							$('#r4').prop('checked',true);
+						}else{
+							$('#r3').prop('checked',true);
+						}
+						if(data.distribution==0){
+							$('#r6').prop('checked',true);
+						}else{
+							$('#r5').prop('checked',true);
+						}
+					}
+				})
+			})
+		</script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	</body>
+</html>

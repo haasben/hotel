@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>查看房型</title>
+		<link href="/images/index.css" type="text/css" rel="stylesheet"/>
+		<!-- <link rel="stylesheet" href="/images/css.css"> -->
+		<link rel="stylesheet" href="/images/boot.css">	</head>
+	</head>
+	<body>
+	<div class="models" style="height: 100%; background: #fff;margin: 10px;overflow-x: hidden;">
+		<h3>编辑房型</h3>
+		<div class="content" style="margin-top: 20px;">
+			<form action="{:url('rooms/index')}" method="post" enctype="multipart/form-data">
+				<div class="wrap">
+					<label>房间类型</label>
+					<input type="text" name="title" value="{$data.title}" required oninvalid="setCustomValidity('房型不能为空') oninput="setCustomValidity('')" placeholder='房型''/>
+				</div>
+				<div class="wrap">
+					<label>房间主图</label>
+					<?php if($data['img']){?>
+					<img src="{$data['img']}" /> <?php } ?>
+					<input type="file" name="path"/>
+				</div>
+				<div class="wrap">
+					<label>房间副图</label>
+					<?php if($data['img_id']){
+					foreach($data['img_id'] as $v){ ?>
+					<img src="{$v['path']}" />
+					<?php }}?>
+					<input type="file" name="path2[]"/>
+				</div>
+				<div class="wrap">
+					<label>房间价格</label>
+					<input type="text" name="price" value="{$data['price']}" readonly />
+				</div>
+				<div class="wrap">
+					<label>卫生间</label>
+					<input type="text" name="wc" value="{$data['wc']}" readonly/>
+				</div>
+				<div class="wrap">
+					<label>窗户</label>
+					<input type="text" name="window" value="{$data['window']}" readonly />
+				</div>
+				<div class="wrap">
+					<label>wifi</label>
+					<input type="text" name="wifi" value="{$data['wifi']}" readonly" />
+				</div>
+				<div class="wrap">
+					<label>早餐</label>
+					<input type="text" name="breakfast" value="{$data['breakfast']}" readonly />
+				</div>
+				<div class="wrap">
+					<label>房型</label>
+					<input type="text" name="roomtype" value="{$data['roomtype']}" readonly />
+				</div>
+				<div class="wrap">
+					<label>楼层</label>
+					<input type="text" name="floor" value="{$data['floor']}" readonly />
+				</div>
+				<div class="wrap">
+					<label>可住人数</label>
+					<input type="text" name="nums" value="{$data['nums']}" readonly />
+				</div>
+				<div class="wrap">
+					<label>房间面积</label>
+					<input type="text" name="area" value="{$data['floor']}" readonly />
+				</div>
+				<div class="wrap">
+					<label>房间说明</label>
+					<textarea name="content" readonly>{$data['content']}</textarea>
+				</div>
+				<div class="wrap">
+					<label>退款规则</label>
+					<textarea name="rerund" readonly>{$data['rerund']}</textarea>
+				</div>
+				<div class="wrap">
+					<label>预定规则</label>
+					<textarea name="reserve" readonly>{$data['reserve']}</textarea>
+				</div>
+				<div class="wrap">
+					<label>使用规则</label>
+					<textarea name="use" readonly>{$data['use']}</textarea>
+				</div>
+				<div class="wrap">
+					<label>使用规则</label>
+					<textarea name="discount" readonly>{$data['discount']}</textarea>
+				</div>
+				<div class="wrap">
+					<label>上次修改</label>
+					<input type="text" name="roomscount" value="<?php if($data['update_time']){echo date('Y-m-d H:i:s',$data['update_time']);}else{echo '-';}?>" readonly/>
+				</div>
+				<div class="wrap btn">
+					<input type="submit" class="save" value="返回"/>
+				</div>
+			</form>
+		</div>
+	</div>
+	<script src="/static/jquery-1.9.1.min.js"></script>
+	<script>
+		$("#parents").on("change",function(){
+			if(this.value==0){
+				$("#times").hide();
+			}else{
+				$("#times").show();
+			}
+		})
+		$(function(){
+			console.log($("#parents").val());
+			if($("#parents").val() != 0){
+				$("#times").show();
+			}else{
+				$("#times").hide();
+			}
+		})
+	</script>
+		<style>
+			ul{margin:0 auto;overflow: hidden;width:100px}
+			ul li{float:left;list-style: none;padding:6px 10px;text-align:center;border:1px solid red;margin:0 4px}
+			.button1{margin:2rem auto;width:600px;}
+			.button1 a{padding:15px 60px;border-radius:4px;margin:0 10px;color:#fff;font-size:1.2em}
+			th{text-align:center}
+		</style>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	</body>
+</html>

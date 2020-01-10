@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>广告管理系统</title>
+		<link href="/images/index.css" type="text/css" rel="stylesheet"/>
+		<script src="/images/jquery.js"></script>
+		<link rel="stylesheet" href="/images/css.css">
+		<link rel="stylesheet" href="/images/boot.css">
+		<link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+		<style type="text/css">
+			.layui-table th{text-align: center;font-weight: bold;}
+			.layui-table td{text-align: center;}
+		</style>
+	</head>
+	<body>
+		<div class="note">
+			<h4><a href="#" style="background:#75bdb6;padding:5px;border:none;color:#fff" id="dialog">新增广告</a></h4>
+			<table class="news_list layui-table" style="width: 96%; margin: 12px auto;">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>图片</th>
+						<th>url</th>
+						<th>状态</th>
+						<th>创建时间</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody>
+				{volist name='row' id='r'}
+					<tr>
+						<td>{$r.id}</td>
+						<td><img style="height:55px" src="{$r.pic}" alt=""></td>
+						<td>{$r.url}</td>
+						<td><?php if($r['state']==0){echo "<span style='color:#00FF6F'>使用中</span>";}else{echo "<span style='color:red'>禁用</span>";} ?></td>
+						<td>{$r.create_time|date="Y-m-d H:i:s",###}</td>
+						<td style="width:400px">
+							<a href="#" class="layui-btn layui-btn-sm img_edit">修改</a>
+							<a href="{:url('sortposter/poster_state','id='.$r.id)}" ><?php if($r['state']=='0'){echo "<span class='layui-btn layui-btn-sm layui-btn-normal'>隐藏</span>";}else{echo "<span class='layui-btn layui-btn-sm layui-btn-warm'>显示</span>";} ?></a>
+							<a href="{:url('sortposter/poster_del','id='.$r.id)}" class="layui-btn layui-btn-sm layui-btn-danger">删除</a>
+						</td>
+					</tr>
+				{/volist}
+				</tbody>
+			</table>
+		</div>
+		<!--添加-->
+		<div class="model">
+			<div class="head">
+				<span>添加广告</span>
+				<a href="javascript:" class="close">×</a>
+			</div>
+			<div class="content">
+				<form action="{:url('sortposter/poster_add')}" method="post" enctype="multipart/form-data">
+					<div class="wrap">
+						<label>图片</label>
+						<input type="file" name="pic" value="" required oninvalid="setCustomValidity('
+						分类名不能为空') oninput="setCustomValidity('')"/>
+					</div>
+					<div class="wrap">
+						<label>url</label>
+						<input type="text" name="url" value="#"/>
+					</div>
+					<div class="wrap">
+						<label>状态</label>
+						<input type="radio" name="state" value="0"/>使用
+						<input type="radio" name="state" value="1" checked>禁用
+					</div>
+					<div class="wrap btn">
+						<input type="submit" class="save" value="确定"/>
+						<input type="reset" class="reset" value="重置"/>
+					</div>
+				</form>
+			</div>
+		</div>
+		<!--修改-->
+		<div class="model_edit">
+			<div class="head">
+				<span>修改广告</span>
+				<a href="javascript:" class="close_edit">×</a>
+			</div>
+			<div class="content">
+				<form action="{:url('sortposter/poster_update')}" method="post" enctype="multipart/form-data">
+					<input type="hidden" name="id" id="id">
+					<div class="wrap">
+						<label>图片</label>
+						<input type="file" name="pic" id="img" value=""/>
+					</div>
+					<div class="wrap">
+						<label>url</label>
+						<input type="text" name="url" id="url" value=""/>
+					</div>
+					<div class="wrap btn">
+						<input type="submit" class="save" value="确定"/>
+						<input type="reset" class="reset" value="重置"/>
+					</div>
+				</form>
+			</div>
+		</div>
+		<script src="/static/jquery-1.9.1.min.js"></script>
+		<script>
+			//添加
+			$('#dialog').on('click', function(){
+				$('.model').show();
+			})
+			$('.close').on('click', function(){
+				$('.model').hide();
+			})
+			//修改
+			$('.img_edit').on('click', function(){
+				$('.model_edit').show();
+			})
+			$('.close_edit').on('click', function(){
+				$('.model_edit').hide();
+			})
+
+			$('.img_edit').click(function(){
+				let val = $(this).parents('tr').find('td').eq(0).text();
+				$.ajax({
+					url:'/index/sortposter/poster_edit',
+					type:'post',
+					data:{'id':val},
+					success:function(data){
+						$('#id').val(data.id);
+						$('#url').val(data.url);
+						$('#content').val(data.content);
+						$('#img').attr('src',data.img);
+					}
+				})
+			})
+		</script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	</body>
+</html>

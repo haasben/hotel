@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>后台管理系统</title>
+		<link href="/images/index.css" type="text/css" rel="stylesheet"/>
+		<link rel="stylesheet" href="/images/css.css">
+		<script src="/images/jquery.js"></script>
+		<script src="/images/index.js"></script>
+	</head>
+	<body>
+		<header>
+			<h1>网站后台管理系统</h1>
+			<div class="right">
+				<p>
+					<a href="/public/main.html" target="box"><span class="icon home"></span>系统首页</a>
+				</p>
+				<div class="username">
+					<strong>{$user.username}</strong>
+						<ul class="menu">
+						<input type="hidden" value="{$user.id}" name="id" id="id">
+						<li><a href="#">{$js.name}</a></li>
+						<li><a href="">个人信息</a></li>
+						<li><a href="javascript:;" target="box" id="dialog">修改密码</a></li>
+						<li><a href="{:url('Index/user_out')}">安全退出</a></li>
+					</ul>
+				</div>
+			</div>
+		</header>
+		<section>
+			<nav>
+				<dl>
+					{volist name="rows" id="row"}
+							<dt>
+								<span class="icon flink">{$row['pow_name']}</span>
+							</dt>
+							<dd>
+								<?php foreach($row['er'] as $s=>$v): ?>
+								<a href="{:url($s)}" target="box">-&emsp;{$v}</a>
+								<?php endforeach;?>
+							</dd>
+					{/volist}
+				</dl>
+			</nav>
+			<iframe src="/public/main.html"  class="mainbox" scrolling="yes" name="box"></iframe>
+		</section>
+	<!--修改密码-->
+		<div class="model">
+			<div class="head">
+				<span>修改密码</span>
+				<a href="javascript:" class="close">×</a>
+			</div>
+			<div class="content">
+				<form action="{:url('Users/update')}" method="post">
+					<input type="hidden" value="{$user.id}" name="id">
+					<div class="wrap">
+						<label>用户名</label>
+						<input type="text" name="name" id="r1" value="" disabled/>
+					</div>
+					<div class="wrap">
+						<label>原密码</label>
+						<input type="text" name="pwd" value=""/>
+					</div>
+					<div class="wrap">
+						<label>新密码</label>
+						<input type="text" name="pwd2" value=""/>
+					</div>
+					<div class="wrap">
+						<label>确认密码</label>
+						<input type="text" name="pwd3" value=""/>
+					</div>
+					<div class="wrap btn">
+						<input type="submit" class="save" value="确定"/>
+						<input type="reset" class="reset" value="重置"/>
+					</div>
+				</form>
+			</div>
+		</div>
+		<script src="/static/jquery-1.9.1.min.js"></script>
+
+	<script>
+		$('#dialog').on('click', function(){
+			$('.model').show();
+		})
+		$('.close').on('click', function(){
+			$('.model').hide();
+		})
+		//回显用户名
+		$('#dialog').click(function(){
+			let id=$('#id').val();
+			$.ajax({
+				url:"/index/Users/edit",
+				type:"post",
+				data:{"id":id},
+				success:function (data) {
+					$('#r1').val(data.username)
+				}
+			})
+		})
+	</script>
+	</body>
+</html>
